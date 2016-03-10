@@ -6,9 +6,19 @@ namespace GeneticsLab
 {
     class PairWiseAlign
     {
-        private static int MATCH_COST = -3;
-        private static int SUBSTITUTION_COST = 1;
-        private static int INDEL_COST = 5;
+        // Cost values
+        private int MATCH_COST = -3;
+        private int SUBSTITUTION_COST = 1;
+        private int INDEL_COST = 5;
+
+        // Parent pathways
+        private int PARENT_INIT = -1;
+        private int PARENT_UP = 0;
+        private int PARENT_DIAGONAL = 1;
+        private int PARENT_LEFT = 2;
+
+        private char ALIGN_PLACEHOLDER = '-';
+
         private int MAX_ALIGN_LENGTH = -1;
 
         public PairWiseAlign(int maxAlignLength)
@@ -27,38 +37,32 @@ namespace GeneticsLab
         public ResultTable.Result Align_And_Extract(GeneSequence sequenceA, GeneSequence sequenceB, bool banded)
         {
             ResultTable.Result result = new ResultTable.Result();
-            int score;                                                       // place your computed alignment score here
-            string[] alignment = new string[2];                              // place your two computed alignments here
-
-
-            // ********* these are placeholder assignments that you'll replace with your code  *******
-            score = computeOptimalAlignment(sequenceA, sequenceB);                                                
-            alignment[0] = "";
-            alignment[1] = "";
-            // ***************************************************************************************
-            
-
-            result.Update(score,alignment[0],alignment[1]);
-            return(result);
+            Tuple<int, Tuple<string, string>> scoreAndAlignments = computeOptimalAlignment(sequenceA, sequenceB);
+            result.Update(scoreAndAlignments.Item1, scoreAndAlignments.Item2.Item1, scoreAndAlignments.Item2.Item2);
+            return result;
         }
 
-        public int computeOptimalAlignment(GeneSequence a, GeneSequence b)
+        public Tuple<int, Tuple<string, string>> computeOptimalAlignment(GeneSequence a, GeneSequence b)
         {
             // Should only compare at most maxAlignLength chars
             int m = Math.Min(a.getLength() + 1, MAX_ALIGN_LENGTH + 1);
             int n = Math.Min(b.getLength() + 1, MAX_ALIGN_LENGTH + 1);
 
             int[,] computedWeight = new int[m, n];
+            int[,] parent = new int[m, n];
+            parent[0, 0] = PARENT_INIT;
 
             // Initialize the first column
             for (int i = 1; i < m; i++)
             {
                 computedWeight[i, 0] = i * INDEL_COST;
+                parent[i, 0] = PARENT_UP;
             }
             // Initialize the first row
             for (int j = 1; j < n; j++)
             {
                 computedWeight[0, j] = j * INDEL_COST;
+                parent[0, j] = PARENT_LEFT;
             }
 
             for (int i = 1; i < m; i++)
@@ -77,11 +81,75 @@ namespace GeneticsLab
                     else
                         diagonal += SUBSTITUTION_COST;
 
-                    computedWeight[i, j] = Math.Min(up, Math.Min(diagonal, left));
+                    // Determine which value is bigger
+                    if (up <= diagonal && up <= left)
+                    {
+                        computedWeight[i, j] = up;
+                        parent[i, j] = PARENT_UP;
+                    }
+                    else if (diagonal <= up && diagonal <= left)
+                    {
+                        computedWeight[i, j] = diagonal;
+                        parent[i, j] = PARENT_DIAGONAL;
+                    }
+                    else
+                    {
+                        computedWeight[i, j] = left;
+                        parent[i, j] = PARENT_LEFT;
+                    }
                 }
             }
 
-            return computedWeight[m - 1, n - 1];
+            Tuple<string, string> alignments = getAlignments(a, b, parent, m, n);
+            return new Tuple<int, Tuple<string, string>>(
+                computedWeight[m - 1, n - 1],
+                new Tuple<string, string>(alignments.Item1, alignments.Item2)
+                );
+        }
+
+        private Tuple<string, string> getAlignments(GeneSequence a, GeneSequence b, int[,] parent, int m, int n)
+        {
+            List<char> seqA = new List<char>();
+            List<char> seqB = new List<char>();
+
+            int i = m - 1;
+            int j = n - 1;
+            while(parent[i, j] != PARENT_INIT)
+            {
+                if (parent[i, j] == PARENT_DIAGONAL)
+                {
+                    seqA.Add(a.getCharAt(i - 1));
+                    seqB.Add(b.getCharAt(j - 1));
+                    i--;
+                    j--;
+                }
+                else if (parent[i, j] == PARENT_UP)
+                {
+                    seqA.Add(a.getCharAt(i - 1));
+                    seqB.Add(ALIGN_PLACEHOLDER);
+                    i--;
+                }
+                else
+                {
+                    seqA.Add(ALIGN_PLACEHOLDER);
+                    seqB.Add(b.getCharAt(j - 1));
+                    j--;
+                }
+            }
+
+            if (seqA.Count != seqB.Count)
+                throw new SystemException("Sequences of strings " + a.Name + ", " + b.Name + " should be equal in length");
+
+            return new Tuple<string, string>(seqA.ToString(), seqB.ToString());
+        }
+
+        private string getString(List<char> chars)
+        {
+            StringBuilder sb = new StringBuilder(chars.Count);
+            for (int i = chars.Count - 1; i >= 0; i--)
+                sb.Append(chars[i]);
+
+            return sb.ToString();
         }
     }
 }

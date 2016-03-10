@@ -14,6 +14,7 @@ namespace GeneticsLab
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            Test.runTests();
             Application.Run(new MainForm());
         }
     }

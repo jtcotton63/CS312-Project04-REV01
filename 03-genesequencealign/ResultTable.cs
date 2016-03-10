@@ -49,13 +49,16 @@ namespace GeneticsLab
         // a structure to hold the results from one alignment: a score and two sequences                               
         {
             int score;
-            string seq1, seq2;
+            string mutationSeq1;
+            string mutationSeq2;
+            List<char> mutationSequence1Reverse;
+            List<char> mutationSequence2Reverse;
 
             public Result()                                                    // constructor
             {
                 this.score = 0;
-                this.seq1 = "";
-                this.seq2 = "";
+                this.mutationSeq1 = null;
+                this.mutationSeq2 = null;
             }
 
             public int GetScore()                                              // accessor methods
@@ -65,12 +68,12 @@ namespace GeneticsLab
 
             public string GetFirst()
             {
-                return seq1;
+                return mutationSeq1;
             }
 
             public string GetSecond()
             {
-                return seq2;
+                return mutationSeq2;
             }
 
             public void SetScore(int s)                                       // mutator methods
@@ -80,26 +83,26 @@ namespace GeneticsLab
 
             public void SetFirst(string seq)
             {
-                seq1 = seq;
+                mutationSeq1 = seq;
             }
 
             public void SetSecond(string seq)
             {
-                seq2 = seq;
+                mutationSeq2 = seq;
             }
 
-            public void Update(int s, string a1, string a2)                    // turbo mutator---set all three things at once
+            public void Update(int s, List<char> mutSeq1, List<char> mutSeq2)                    // turbo mutator---set all three things at once
             {
                 score = s;
-                seq1 = a1;
-                seq2 = a2;
+                mutationSequence1Reverse = mutSeq1;
+                mutationSequence2Reverse = mutSeq2;
             }
 
             public void Clear()                  
             {
                 score = 0;
-                seq1 = "";
-                seq2 = "";
+                mutationSeq1 = "";
+                mutationSeq2 = "";
             }
         }
 
