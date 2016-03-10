@@ -38,7 +38,7 @@ namespace GeneticsLab
             // ***************************************************************************************
             
 
-            result.Update(score,alignment[0],alignment[1]);                  // bundling your results into the right object type 
+            result.Update(score,alignment[0],alignment[1]);
             return(result);
         }
 
