@@ -6,17 +6,20 @@ namespace GeneticsLab
 {
     class GeneSequence
     {
+        private string name;
+        private string sequence;
+
         public GeneSequence(string name, string sequence)
         {
-            m_name = name;
-            m_sequence = sequence;
+            this.name = name;
+            this.sequence = sequence;
         }
 
         public string Name
         {
             get
             {
-                return m_name;
+                return name;
             }
         }
 
@@ -24,10 +27,18 @@ namespace GeneticsLab
         {
             get
             {
-                return m_sequence;
+                return sequence;
             }
         }
 
-        private string m_name, m_sequence;
+        public int getLength()
+        {
+            return sequence.Length;
+        }
+
+        public char getCharAt(int index)
+        {
+            return sequence[index];
+        }
     }
 }

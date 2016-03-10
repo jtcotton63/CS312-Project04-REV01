@@ -110,7 +110,7 @@ namespace GeneticsLab
             {
                 for (int y = x; y < NUMBER_OF_SEQUENCES; ++y)
                 {
-                    result = processor.Align_And_Extract(m_sequences[x], m_sequences[y], bandCheckBox.Checked);                 // ********* hook to the student's code
+                    result = processor.Align_And_Extract(m_sequences[x], m_sequences[y], bandCheckBox.Checked);
                     m_resultTable.AddResult(x,y,result);
                     m_resultTable.DisplayResult(x, y);
                 }
