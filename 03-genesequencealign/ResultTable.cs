@@ -137,28 +137,6 @@ namespace GeneticsLab
             }
         }
 
-        public void SetCell(int x, int y, int value)                                           // I don't think this gets used.
-        {
-            m_results[x, y].SetScore(value);
-            if (value == int.MaxValue)
-                m_dataView.Rows[x].Cells[y].Value = "***";
-            else
-                m_dataView.Rows[x].Cells[y].Value = value;
-            m_dataView.Update();
-        }
-
-        public void SetCell(int x, int y, int value, string seq1, string seq2)                  // new method that (also) initializes alignment matrix cell with a pair of sequence strings
-        {                                                                                       // I don't think this gets used anymore.
-            m_results[x, y].SetScore(value);
-            m_results[x, y].SetFirst(seq1);
-            m_results[x, y].SetSecond(seq2);
-            if (value == int.MaxValue)
-                m_dataView.Rows[x].Cells[y].Value = "***";
-            else
-                m_dataView.Rows[x].Cells[y].Value = value;
-            m_dataView.Update();
-        }
-
         public void DisplayResult(int x, int y)                                                 // new method to display results in dataview
         {
             int score = m_results[x,y].GetScore();
@@ -175,7 +153,7 @@ namespace GeneticsLab
         }
 
         public Result GetCell(int x, int y)                                                    // accessor method for a result in the results table
-        {                                                                                      // I don't think this gets used
+        {                                                                                      
             return (m_results[x, y]);
         }
    }

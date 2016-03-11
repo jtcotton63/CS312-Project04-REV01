@@ -105,14 +105,30 @@ namespace GeneticsLab
         {
             int alignLen = int.Parse(bandlengthBox.Text);
             ResultTable.Result result;
-            PairWiseAlign processor = new PairWiseAlign(alignLen);
-            for (int x = 0; x < NUMBER_OF_SEQUENCES; ++x)
+            if(bandCheckBox.Checked)
             {
-                for (int y = x; y < NUMBER_OF_SEQUENCES; ++y)
+                PairWiseAlignBanded processor = new PairWiseAlignBanded(alignLen);
+                for (int x = 0; x < NUMBER_OF_SEQUENCES; ++x)
                 {
-                    result = processor.Align_And_Extract(m_sequences[x], m_sequences[y], bandCheckBox.Checked);
-                    m_resultTable.AddResult(x,y,result);
-                    m_resultTable.DisplayResult(x, y);
+                    for (int y = x; y < NUMBER_OF_SEQUENCES; ++y)
+                    {
+                        result = processor.Align_And_Extract(m_sequences[x], m_sequences[y]);
+                        m_resultTable.AddResult(x, y, result);
+                        m_resultTable.DisplayResult(x, y);
+                    }
+                }
+            }
+            else
+            {
+                PairWiseAlignNotBanded processor = new PairWiseAlignNotBanded(alignLen);
+                for (int x = 0; x < NUMBER_OF_SEQUENCES; ++x)
+                {
+                    for (int y = x; y < NUMBER_OF_SEQUENCES; ++y)
+                    {
+                        result = processor.Align_And_Extract(m_sequences[x], m_sequences[y]);
+                        m_resultTable.AddResult(x, y, result);
+                        m_resultTable.DisplayResult(x, y);
+                    }
                 }
             }
         }

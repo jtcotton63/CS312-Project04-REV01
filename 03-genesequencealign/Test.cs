@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace GeneticsLab
 {
@@ -20,7 +17,7 @@ namespace GeneticsLab
             GeneSequence seqA = new GeneSequence(null, "ATGCC");
             GeneSequence seqB = new GeneSequence(null, "TACGCA");
 
-            PairWiseAlign pwa = new PairWiseAlign(5000);
+            PairWiseAlignNotBanded pwa = new PairWiseAlignNotBanded(5000);
             Tuple<int, Tuple<List<char>, List<char>>> stuff = pwa.computeOptimalAlignment(seqA, seqB);
             int result = stuff.Item1;
             if (result != expected)
@@ -33,7 +30,7 @@ namespace GeneticsLab
             GeneSequence seqA = new GeneSequence(null, "POLYNOMIAL");
             GeneSequence seqB = new GeneSequence(null, "EXPONENTIAL");
 
-            PairWiseAlign pwa = new PairWiseAlign(5000);
+            PairWiseAlignNotBanded pwa = new PairWiseAlignNotBanded(5000);
             Tuple<int, Tuple<List<char>, List<char>>> stuff = pwa.computeOptimalAlignment(seqA, seqB);
             int result = stuff.Item1;
             if (result != expected)
