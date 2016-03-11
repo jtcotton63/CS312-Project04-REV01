@@ -37,12 +37,12 @@ namespace GeneticsLab
         public ResultTable.Result Align_And_Extract(GeneSequence sequenceA, GeneSequence sequenceB, bool banded)
         {
             ResultTable.Result result = new ResultTable.Result();
-            Tuple<int, Tuple<string, string>> scoreAndAlignments = computeOptimalAlignment(sequenceA, sequenceB);
+            Tuple<int, Tuple<List<char>, List<char>>> scoreAndAlignments = computeOptimalAlignment(sequenceA, sequenceB);
             result.Update(scoreAndAlignments.Item1, scoreAndAlignments.Item2.Item1, scoreAndAlignments.Item2.Item2);
             return result;
         }
 
-        public Tuple<int, Tuple<string, string>> computeOptimalAlignment(GeneSequence a, GeneSequence b)
+        public Tuple<int, Tuple<List<char>, List<char>>> computeOptimalAlignment(GeneSequence a, GeneSequence b)
         {
             // Should only compare at most maxAlignLength chars
             int m = Math.Min(a.getLength() + 1, MAX_ALIGN_LENGTH + 1);
@@ -100,14 +100,14 @@ namespace GeneticsLab
                 }
             }
 
-            Tuple<string, string> alignments = getAlignments(a, b, parent, m, n);
-            return new Tuple<int, Tuple<string, string>>(
+            Tuple<List<char>, List<char>> alignments = getAlignments(a, b, parent, m, n);
+            return new Tuple<int, Tuple<List<char>, List<char>>>(
                 computedWeight[m - 1, n - 1],
-                new Tuple<string, string>(alignments.Item1, alignments.Item2)
+                alignments
                 );
         }
 
-        private Tuple<string, string> getAlignments(GeneSequence a, GeneSequence b, int[,] parent, int m, int n)
+        private Tuple<List<char>, List<char>> getAlignments(GeneSequence a, GeneSequence b, int[,] parent, int m, int n)
         {
             List<char> seqA = new List<char>();
             List<char> seqB = new List<char>();
@@ -140,16 +140,7 @@ namespace GeneticsLab
             if (seqA.Count != seqB.Count)
                 throw new SystemException("Sequences of strings " + a.Name + ", " + b.Name + " should be equal in length");
 
-            return new Tuple<string, string>(seqA.ToString(), seqB.ToString());
-        }
-
-        private string getString(List<char> chars)
-        {
-            StringBuilder sb = new StringBuilder(chars.Count);
-            for (int i = chars.Count - 1; i >= 0; i--)
-                sb.Append(chars[i]);
-
-            return sb.ToString();
+            return new Tuple<List<char>, List<char>>(seqA, seqB);
         }
     }
 }

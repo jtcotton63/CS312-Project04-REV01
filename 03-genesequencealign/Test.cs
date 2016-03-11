@@ -21,7 +21,7 @@ namespace GeneticsLab
             GeneSequence seqB = new GeneSequence(null, "TACGCA");
 
             PairWiseAlign pwa = new PairWiseAlign(5000);
-            Tuple<int, Tuple<string, string>> stuff = pwa.computeOptimalAlignment(seqA, seqB);
+            Tuple<int, Tuple<List<char>, List<char>>> stuff = pwa.computeOptimalAlignment(seqA, seqB);
             int result = stuff.Item1;
             if (result != expected)
                 throw new SystemException("Test01 failed");
@@ -34,7 +34,7 @@ namespace GeneticsLab
             GeneSequence seqB = new GeneSequence(null, "EXPONENTIAL");
 
             PairWiseAlign pwa = new PairWiseAlign(5000);
-            Tuple<int, Tuple<string, string>> stuff = pwa.computeOptimalAlignment(seqA, seqB);
+            Tuple<int, Tuple<List<char>, List<char>>> stuff = pwa.computeOptimalAlignment(seqA, seqB);
             int result = stuff.Item1;
             if (result != expected)
                 throw new SystemException("Test02 failed");

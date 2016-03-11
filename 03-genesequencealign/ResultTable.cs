@@ -59,6 +59,8 @@ namespace GeneticsLab
                 this.score = 0;
                 this.mutationSeq1 = null;
                 this.mutationSeq2 = null;
+                this.mutationSequence1Reverse = null;
+                this.mutationSequence2Reverse = null;
             }
 
             public int GetScore()                                              // accessor methods
@@ -68,11 +70,17 @@ namespace GeneticsLab
 
             public string GetFirst()
             {
+                if (mutationSeq1 == null && mutationSequence1Reverse != null)
+                    mutationSeq1 = getMutationStringFromReversed(mutationSequence1Reverse);
+
                 return mutationSeq1;
             }
 
             public string GetSecond()
             {
+                if (mutationSeq2 == null && mutationSequence2Reverse != null)
+                    mutationSeq2 = getMutationStringFromReversed(mutationSequence2Reverse);
+
                 return mutationSeq2;
             }
 
@@ -101,8 +109,19 @@ namespace GeneticsLab
             public void Clear()                  
             {
                 score = 0;
-                mutationSeq1 = "";
-                mutationSeq2 = "";
+                mutationSeq1 = null;
+                mutationSeq2 = null;
+                mutationSequence1Reverse = null;
+                mutationSequence2Reverse = null;
+            }
+
+            private string getMutationStringFromReversed(List<char> chars)
+            {
+                StringBuilder sb = new StringBuilder(chars.Count);
+                for (int i = chars.Count - 1; i >= 0; i--)
+                    sb.Append(chars[i]);
+
+                return sb.ToString();
             }
         }
 
