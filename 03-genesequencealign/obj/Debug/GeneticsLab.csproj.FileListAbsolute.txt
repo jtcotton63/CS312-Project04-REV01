@@ -1,0 +1,11 @@
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\bin\Debug\GeneticsLab.exe.manifest
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\bin\Debug\GeneticsLab.application
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\bin\Debug\GeneticsLab.exe
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\bin\Debug\GeneticsLab.pdb
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\obj\Debug\GeneticsLab.MainForm.resources
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\obj\Debug\GeneticsLab.Properties.Resources.resources
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\obj\Debug\GeneticsLab.csproj.GenerateResource.Cache
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\obj\Debug\GeneticsLab.exe.manifest
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\obj\Debug\GeneticsLab.application
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\obj\Debug\GeneticsLab.exe
+C:\Users\Josepher\CS312\CS312-Project04-REV01\03-genesequencealign\obj\Debug\GeneticsLab.pdb
