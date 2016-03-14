@@ -37,14 +37,22 @@ namespace GeneticsLab
             }
         }
 
+        // Computes the score of an individual cell 
         public static void scoreIndividualCell(GeneSequence a, GeneSequence b,
-            int[,] computedWeight, int[,] parent, int i, int j)
+            int[,] computedScore, int[,] parent, int i, int j)
         {
-            int up = computedWeight[i - 1, j] + INDEL_COST;
-            int left = computedWeight[i, j - 1] + INDEL_COST;
+            // Compute the score if the cell above
+            // were chosen as the parent
+            int up = computedScore[i - 1, j] + INDEL_COST;
+            // Compute the score if the cell to the left
+            // were chosen as the parent
+            int left = computedScore[i, j - 1] + INDEL_COST;
 
-            // Do the diagonal stuff
-            int diagonal = computedWeight[i - 1, j - 1];
+            // Compute the score if the cell diagonally
+            // up and to the left were chosen as the parent.
+            // If the two letters are the same, this means that
+            // it would be a match; otherwise it is a substitution.
+            int diagonal = computedScore[i - 1, j - 1];
             char aLetter = a.getCharAt(i - 1);
             char bLetter = b.getCharAt(j - 1);
             if (aLetter.Equals(bLetter))
@@ -52,20 +60,23 @@ namespace GeneticsLab
             else
                 diagonal += SUBSTITUTION_COST;
 
-            // Determine which value is bigger
+            // Determine which score is the smallest
+            // The use of <= instead of < helps to 
+            // diffuse cases when two of the values
+            // are equal to each other.
             if (up <= diagonal && up <= left)
             {
-                computedWeight[i, j] = up;
+                computedScore[i, j] = up;
                 parent[i, j] = PARENT_UP;
             }
             else if (diagonal <= up && diagonal <= left)
             {
-                computedWeight[i, j] = diagonal;
+                computedScore[i, j] = diagonal;
                 parent[i, j] = PARENT_DIAGONAL;
             }
             else
             {
-                computedWeight[i, j] = left;
+                computedScore[i, j] = left;
                 parent[i, j] = PARENT_LEFT;
             }
         }
@@ -99,9 +110,6 @@ namespace GeneticsLab
                     j--;
                 }
             }
-
-            if (seqA.Count != seqB.Count)
-                throw new SystemException("Sequences of strings " + a.Name + ", " + b.Name + " should be equal in length");
 
             return new Tuple<List<char>, List<char>>(seqA, seqB);
         }

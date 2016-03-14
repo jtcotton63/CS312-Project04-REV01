@@ -5,7 +5,6 @@ namespace GeneticsLab
 {
     class PairWiseAlignBanded
     {
-        private char ALIGN_PLACEHOLDER = '-';
         private int MAX_ALIGN_LENGTH = -1;
         private int BAND_LENGTH = 3;
         private List<char> noAlignmentPossibleInReverse = new List<char>
@@ -14,6 +13,12 @@ namespace GeneticsLab
         public PairWiseAlignBanded(int maxAlignLength)
         {
             this.MAX_ALIGN_LENGTH = maxAlignLength;
+        }
+
+        public PairWiseAlignBanded(int maxAlignLength, int bandLength)
+        {
+            this.MAX_ALIGN_LENGTH = maxAlignLength;
+            this.BAND_LENGTH = bandLength;
         }
 
         /// <summary>
@@ -31,7 +36,9 @@ namespace GeneticsLab
             int score;
             List<char> one;
             List<char> two;
-            if(scoreAndAlignments.Item2 == null)
+            // If Item2 is null, the alignment could not be computed
+            // using the banded algorithm
+            if (scoreAndAlignments.Item2 == null)
             {
                 score = Int32.MaxValue;
                 one = noAlignmentPossibleInReverse;
@@ -48,6 +55,20 @@ namespace GeneticsLab
             return result;
         }
 
+        /**
+         * Computes the optimal alignment of the two gene sequences.
+         * Returns a tuple that contains the following:
+                item1: the optimal alignment score
+                item2: a tuple of two lists of chars:
+                        item1: the first alignment sequence as a List<char> 
+                               IN REVERSE ORDER.
+                        item2: the second alignment sequence as a List<char> 
+                               IN REVERSE ORDER.
+                * Please note that the two List<char> will be put in the proper
+                order before they are displayed to the screen. This is handled
+                by the ResultTable.Result class.
+                * If this sequence cannot be aligned, item2 will return null.
+         */
         public Tuple<int, Tuple<List<char>, List<char>>> computeOptimalAlignment(GeneSequence a, GeneSequence b)
         {
             // Should only compare at most maxAlignLength chars
@@ -57,20 +78,27 @@ namespace GeneticsLab
             int[,] computedWeight = new int[m, n];
             int[,] parent = new int[m, n];
             parent[0, 0] = PairWiseHelper.PARENT_INIT;
+            // Indicates if using the banded algorithm is possible
+            // for aligning these two sequences. If parent[m-1,n-1] is
+            // still Int32.Max when the program terminates, then the algorithm
+            // never reached the end of the array and the banded algorithm
+            // cannot be used for these two sequences.
             parent[m - 1, n - 1] = Int32.MaxValue;
 
             PairWiseHelper.intializeFirsts(computedWeight, parent, m, n);
 
             for (int i = 1; i < m; i++)
             {
-                // Down from i,i
+                // Fill in the scores for the first BAND_LENGTH cells
+                // down from the current cell
                 int len = Math.Min(BAND_LENGTH, m - i);
                 for (int j = i; j < i + len; j++)
                 {
                     PairWiseHelper.scoreIndividualCell(a, b, computedWeight, parent, j, i);
                 }
 
-                // Right from i,i
+                // Fill in the scores for the first BAND_LENGTH cells
+                // left from the current cell
                 int len2 = Math.Min(BAND_LENGTH, n - i);
                 for (int j = i; j < i + len2; j++)
                 {
@@ -87,8 +115,12 @@ namespace GeneticsLab
 
         private Tuple<List<char>, List<char>> getAlignmentsCheckBandedSuccessful(GeneSequence a, GeneSequence b, int[,] parent, int m, int n)
         {
-            // These two sequences can't be reconciled thru
-            // the banded algorithm
+            // If the value of parent[m-1,n-1] is still 
+            // set to Int32.MaxValue, then the parent pointer
+            // was never set at [m-1,n-1]. This means that
+            // the sizes of the two strings are such that
+            // the two strings cannot be aligned using
+            // the banded algorithm.
             if (parent[m - 1, n - 1] == Int32.MaxValue)
                 return null;
 

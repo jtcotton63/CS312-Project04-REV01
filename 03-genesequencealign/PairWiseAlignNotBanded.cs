@@ -27,6 +27,19 @@ namespace GeneticsLab
             return result;
         }
 
+        /**
+         * Computes the optimal alignment of the two gene sequences.
+         * Returns a tuple that contains the following:
+                item1: the optimal alignment score
+                item2: a tuple of two lists of chars:
+                        item1: the first alignment sequence as a List<char> 
+                               IN REVERSE ORDER.
+                        item2: the second alignment sequence as a List<char> 
+                               IN REVERSE ORDER.
+                Please note that the two List<char> will be put in the proper
+                order before they are displayed to the screen. This is handled
+                by the ResultTable.Result class.
+         */
         public Tuple<int, Tuple<List<char>, List<char>>> computeOptimalAlignment(GeneSequence a, GeneSequence b)
         {
             // Should only compare at most maxAlignLength chars
@@ -43,6 +56,7 @@ namespace GeneticsLab
             {
                 for (int j = 1; j < n; j++)
                 {
+                    // Compute the score for this cell
                     PairWiseHelper.scoreIndividualCell(a, b, computedWeight, parent, i, j);
                 }
             }
