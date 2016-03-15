@@ -7,6 +7,7 @@ namespace GeneticsLab
     {
         private int MAX_ALIGN_LENGTH = -1;
         private int BAND_LENGTH = 3;
+        private int BANDED_EMPTY_CELL_PLACEHOLDER = Int32.MaxValue;
         private List<char> noAlignmentPossibleInReverse = new List<char>
         {'e','l','b', 'i', 's', 's', 'o', 'P', ' ', 't', 'n', 'e', 'm', 'n', 'g', 'i', 'l', 'A', ' ', 'o', 'N'};
 
@@ -75,9 +76,17 @@ namespace GeneticsLab
             int m = Math.Min(a.getLength() + 1, MAX_ALIGN_LENGTH + 1);
             int n = Math.Min(b.getLength() + 1, MAX_ALIGN_LENGTH + 1);
 
-            int[,] computedWeight = new int[m, n];
+            int[,] computedScore = new int[m, n];
+            // Initialize all the values in computedScore
+            // array to be Int32.Max. This prevents the banded
+            // algorithm from choosing values outside the band,
+            // which are typically set to 0 by default.
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                    computedScore[i, j] = BANDED_EMPTY_CELL_PLACEHOLDER;
+            }
             int[,] parent = new int[m, n];
-            parent[0, 0] = PairWiseHelper.PARENT_INIT;
             // Indicates if using the banded algorithm is possible
             // for aligning these two sequences. If parent[m-1,n-1] is
             // still Int32.Max when the program terminates, then the algorithm
@@ -85,16 +94,19 @@ namespace GeneticsLab
             // cannot be used for these two sequences.
             parent[m - 1, n - 1] = Int32.MaxValue;
 
-            PairWiseHelper.intializeFirsts(computedWeight, parent, m, n);
+            PairWiseHelper.intializeFirsts(computedScore, parent, m, n);
 
             for (int i = 1; i < m; i++)
             {
+                // Compute the score of the current cell
+                scoreIndividualCell(a, b, computedScore, parent, i, i);
+
                 // Fill in the scores for the first BAND_LENGTH cells
                 // down from the current cell
                 int len = Math.Min(BAND_LENGTH, m - i);
                 for (int j = i; j < i + len; j++)
                 {
-                    PairWiseHelper.scoreIndividualCell(a, b, computedWeight, parent, j, i);
+                    scoreIndividualCell(a, b, computedScore, parent, j, i);
                 }
 
                 // Fill in the scores for the first BAND_LENGTH cells
@@ -102,15 +114,74 @@ namespace GeneticsLab
                 int len2 = Math.Min(BAND_LENGTH, n - i);
                 for (int j = i; j < i + len2; j++)
                 {
-                    PairWiseHelper.scoreIndividualCell(a, b, computedWeight, parent, i, j);
+                    scoreIndividualCell(a, b, computedScore, parent, i, j);
                 }
             }
 
             Tuple<List<char>, List<char>> alignments = getAlignmentsCheckBandedSuccessful(a, b, parent, m, n);
             return new Tuple<int, Tuple<List<char>, List<char>>>(
-                computedWeight[m - 1, n - 1],
+                computedScore[m - 1, n - 1],
                 alignments
                 );
+        }
+
+        // Computes the score of an individual cell 
+        public void scoreIndividualCell(GeneSequence a, GeneSequence b,
+            int[,] computedScore, int[,] parent, int i, int j)
+        {
+            // Compute the score if the cell above
+            // were chosen as the parent.
+            // If computedScore[i, j] == BANDED_EMPTY_CELL_PLACEHOLDER,
+            // this means that the cell value is outside the bounds
+            // of the banded algorithm. It is necessary to keep the
+            // placeholder value in the up cell.
+            // If it is not equal to BANDED_EMPTY_CELL_PLACEHOLDER,
+            // we want the up cell to be taken into account when
+            // choosing the smallest parent score for the current cell. 
+            int up = computedScore[i - 1, j];
+            if(up != BANDED_EMPTY_CELL_PLACEHOLDER)
+                up += PairWiseHelper.INDEL_COST;
+            // Compute the score if the cell to the left
+            // were chosen as the parent
+            // 
+            int left = computedScore[i, j - 1];
+            if(left != BANDED_EMPTY_CELL_PLACEHOLDER)
+                left += PairWiseHelper.INDEL_COST;
+
+            // Compute the score if the cell diagonally
+            // up and to the left were chosen as the parent.
+            // If the two letters are the same, this means that
+            // it would be a match; otherwise it is a substitution.
+            int diagonal = computedScore[i - 1, j - 1];
+            if(diagonal != BANDED_EMPTY_CELL_PLACEHOLDER)
+            {
+                char aLetter = a.getCharAt(i - 1);
+                char bLetter = b.getCharAt(j - 1);
+                if (aLetter.Equals(bLetter))
+                    diagonal += PairWiseHelper.MATCH_COST;
+                else
+                    diagonal += PairWiseHelper.SUBSTITUTION_COST;
+            }
+
+            // Determine which score is the smallest
+            // The use of <= instead of < helps to 
+            // diffuse cases when two of the values
+            // are equal to each other.
+            if (up <= diagonal && up <= left)
+            {
+                computedScore[i, j] = up;
+                parent[i, j] = PairWiseHelper.PARENT_UP;
+            }
+            else if (diagonal <= up && diagonal <= left)
+            {
+                computedScore[i, j] = diagonal;
+                parent[i, j] = PairWiseHelper.PARENT_DIAGONAL;
+            }
+            else
+            {
+                computedScore[i, j] = left;
+                parent[i, j] = PairWiseHelper.PARENT_LEFT;
+            }
         }
 
         private Tuple<List<char>, List<char>> getAlignmentsCheckBandedSuccessful(GeneSequence a, GeneSequence b, int[,] parent, int m, int n)

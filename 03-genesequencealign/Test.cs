@@ -35,6 +35,9 @@ namespace GeneticsLab
             int result = stuff.Item1;
             if (result != expected)
                 throw new SystemException("Test02 failed");
+            PairWiseAlignBanded pwb = new PairWiseAlignBanded(5000, 3);
+            Tuple<int, Tuple<List<char>, List<char>>> stuff2 = pwb.computeOptimalAlignment(seqA, seqB);
+
         }
     }
 }

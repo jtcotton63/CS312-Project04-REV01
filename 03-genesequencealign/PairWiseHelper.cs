@@ -21,63 +21,24 @@ namespace GeneticsLab
         // Other
         private static char ALIGN_PLACEHOLDER = '-';
 
-        public static void intializeFirsts(int[,] computedWeight, int[,] parent, int m, int n)
+        public static void intializeFirsts(int[,] computedScore, int[,] parent, int m, int n)
         {
+            // Initialize the first cell
+            computedScore[0, 0] = 0;
+            // Initialize parent
+            parent[0, 0] = PARENT_INIT;
+
             // Initialize the first column
             for (int i = 1; i < m; i++)
             {
-                computedWeight[i, 0] = i * PairWiseHelper.INDEL_COST;
+                computedScore[i, 0] = i * PairWiseHelper.INDEL_COST;
                 parent[i, 0] = PairWiseHelper.PARENT_UP;
             }
             // Initialize the first row
             for (int j = 1; j < n; j++)
             {
-                computedWeight[0, j] = j * PairWiseHelper.INDEL_COST;
+                computedScore[0, j] = j * PairWiseHelper.INDEL_COST;
                 parent[0, j] = PairWiseHelper.PARENT_LEFT;
-            }
-        }
-
-        // Computes the score of an individual cell 
-        public static void scoreIndividualCell(GeneSequence a, GeneSequence b,
-            int[,] computedScore, int[,] parent, int i, int j)
-        {
-            // Compute the score if the cell above
-            // were chosen as the parent
-            int up = computedScore[i - 1, j] + INDEL_COST;
-            // Compute the score if the cell to the left
-            // were chosen as the parent
-            int left = computedScore[i, j - 1] + INDEL_COST;
-
-            // Compute the score if the cell diagonally
-            // up and to the left were chosen as the parent.
-            // If the two letters are the same, this means that
-            // it would be a match; otherwise it is a substitution.
-            int diagonal = computedScore[i - 1, j - 1];
-            char aLetter = a.getCharAt(i - 1);
-            char bLetter = b.getCharAt(j - 1);
-            if (aLetter.Equals(bLetter))
-                diagonal += MATCH_COST;
-            else
-                diagonal += SUBSTITUTION_COST;
-
-            // Determine which score is the smallest
-            // The use of <= instead of < helps to 
-            // diffuse cases when two of the values
-            // are equal to each other.
-            if (up <= diagonal && up <= left)
-            {
-                computedScore[i, j] = up;
-                parent[i, j] = PARENT_UP;
-            }
-            else if (diagonal <= up && diagonal <= left)
-            {
-                computedScore[i, j] = diagonal;
-                parent[i, j] = PARENT_DIAGONAL;
-            }
-            else
-            {
-                computedScore[i, j] = left;
-                parent[i, j] = PARENT_LEFT;
             }
         }
 
@@ -112,6 +73,16 @@ namespace GeneticsLab
             }
 
             return new Tuple<List<char>, List<char>>(seqA, seqB);
+        }
+
+        public static void printArray(int[,] array, int m, int n)
+        {
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                    Console.Write(array[i, j] + ",");
+                Console.Write("\n");
+            }
         }
     }
 }
