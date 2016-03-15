@@ -103,16 +103,16 @@ namespace GeneticsLab
 
                 // Fill in the scores for the first BAND_LENGTH cells
                 // down from the current cell
-                int len = Math.Min(BAND_LENGTH, m - i);
-                for (int j = i; j < i + len; j++)
+                int len = Math.Min(BAND_LENGTH, m - 1 - i);  // This line is to prevent access out of matrix bounds
+                for (int k = i + 1; k <= i + len; k++)
                 {
-                    scoreIndividualCell(a, b, computedScore, parent, j, i);
+                    scoreIndividualCell(a, b, computedScore, parent, k, i);
                 }
 
                 // Fill in the scores for the first BAND_LENGTH cells
                 // left from the current cell
-                int len2 = Math.Min(BAND_LENGTH, n - i);
-                for (int j = i; j < i + len2; j++)
+                int len2 = Math.Min(BAND_LENGTH, n - 1 - i);  // This line is to prevent access out of matrix bounds
+                for (int j = i + 1; j <= i + len2; j++)
                 {
                     scoreIndividualCell(a, b, computedScore, parent, i, j);
                 }
